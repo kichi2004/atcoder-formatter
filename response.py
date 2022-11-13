@@ -5,5 +5,5 @@ from pydantic import BaseModel
 
 class ResponseModel(BaseModel):
     status: str
-    err: Optional[str]
+    error: Optional[str]
     result: Optional[str]
