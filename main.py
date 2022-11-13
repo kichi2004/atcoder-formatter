@@ -55,4 +55,4 @@ async def format_code(lang: str, request: Request):
 
 if __name__ == '__main__':
     port = os.getenv('PORT', 9000)
-    uvicorn.run(app, host='0.0.0.0', port=port)
+    uvicorn.run(app, host='0.0.0.0', port=int(port))
