@@ -8,7 +8,10 @@
 // @author         kichi2004
 // @match          https://atcoder.jp/contests/*
 // @grant          none
-// @require        https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js
+// @updateURL      https://raw.githubusercontent.com/kichi2004/atcoder-formatter/master/user_script/script.js
+// @downloadURL    https://raw.githubusercontent.com/kichi2004/atcoder-formatter/master/user_script/script.js
+// @namespace      kichi2004.jp
+// @license        MIT
 // ==/UserScript==
 
 'use strict';
