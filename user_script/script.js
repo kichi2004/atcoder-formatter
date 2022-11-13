@@ -2,7 +2,7 @@
 // @name           AtCoder Formatter
 // @name:en        AtCoder Formatter
 // @namespace
-// @version        1.0
+// @version        1.1
 // @description    AtCoder の解説コードなどをフォーマットできるようにします．
 // @description:en Add formatting buttons to source codes on AtCoder.
 // @author         kichi2004
