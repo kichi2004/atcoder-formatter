@@ -31,7 +31,6 @@
                 body: data.innerText,
                 method: 'POST'
             })
-            console.log(event.target)
             event.target.disabled = false
             if (!res.ok) {
                 alert('Formatting Request Failed!')
