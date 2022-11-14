@@ -19,7 +19,6 @@ class CSharpFormatter(IFormatter):
             cp = subprocess.run(
                 [PATH, 'format', '--include', file_name, '--no-restore'],
                 cwd=dir_name,
-                stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE
             )
             if cp.returncode != 0:
