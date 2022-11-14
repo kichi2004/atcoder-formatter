@@ -5,7 +5,7 @@ from fastapi import FastAPI, Request, HTTPException
 from starlette.middleware.cors import CORSMiddleware
 
 from format_failed_exception import FormattingFailedError
-from formatter import CppFormatter, PythonFormatter
+from formatter import CppFormatter, PythonFormatter, CSharpFormatter
 from response import ResponseModel
 
 app = FastAPI()
@@ -29,16 +29,19 @@ app.add_middleware(
 def ping():
     return {'ping': 'pong'}
 
+formatters = {
+    'cpp': CppFormatter,
+    'py': PythonFormatter,
+    'cs': CSharpFormatter
+}
 
 @app.post('/format', response_model=ResponseModel)
 async def format_code(lang: str, request: Request):
     input_source = (await request.body()).decode('UTF-8')
 
     try:
-        if lang == 'cpp':
-            result = CppFormatter.format(input_source)
-        elif lang == 'py':
-            result = PythonFormatter.format(input_source)
+        if lang in formatters:
+            result = formatters[lang].format(input_source)
         else:
             raise HTTPException(status_code=400, detail='Unsupported Language')
         return ResponseModel(

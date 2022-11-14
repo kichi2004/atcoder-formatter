@@ -5,20 +5,21 @@ from format_failed_exception import FormattingFailedError
 from . import IFormatter
 from .formatter import format_common
 
-PATH = os.getenv('CLANG_FORMAT_PATH')
+PATH = os.getenv('DOTNET_PATH')
 
-class CppFormatter(IFormatter):
+class CSharpFormatter(IFormatter):
     @staticmethod
     def format(source: str) -> str:
         def _process(dir_name):
-            file_name = f'main.cpp'
+            file_name = f'Program.cs'
             file_path = f'{dir_name}/{file_name}'
             with open(file_path, 'w') as f:
                 f.write(source)
 
             cp = subprocess.run(
-                [PATH, file_name, '-i'],
+                [PATH, 'format', '--include', file_name, '--no-restore'],
                 cwd=dir_name,
+                stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE
             )
             if cp.returncode != 0:
@@ -26,4 +27,4 @@ class CppFormatter(IFormatter):
 
             return file_path
 
-        return format_common('cpp', _process)
+        return format_common('cs', _process)

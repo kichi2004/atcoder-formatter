@@ -2,7 +2,7 @@
 // @name           AtCoder Formatter
 // @name:en        AtCoder Formatter
 // @namespace
-// @version        1.1
+// @version        1.2
 // @description    AtCoder の解説コードなどをフォーマットできるようにします．
 // @description:en Add formatting buttons to source codes on AtCoder.
 // @author         kichi2004
@@ -103,17 +103,23 @@
             'afterend',
             `
 <div class="btn-group" role="group">
+    <button type="button" class="btn ${buttonClass} btn-sm" >
+        C++
+    </button>
     <button type="button" class="btn ${buttonClass} btn-sm" id="${id}-fmt-cpp">
-        フォーマット (C++)
+        C++
     </button>
     <button type="button" class="btn ${buttonClass} btn-sm" id="${id}-fmt-py">
-        フォーマット (Python)
+        Python
+    </button>
+    <button type="button" class="btn ${buttonClass} btn-sm" id="${id}-fmt-cs">
+        C#
     </button>
 </div>`
         )
-        document.getElementById(`${id}-fmt-cpp`)
-            .addEventListener('click', async (e) => await formatCode(e, pre, id, 'cpp'))
-        document.getElementById(`${id}-fmt-py`)
-            .addEventListener('click', async (e) => await formatCode(e, pre, id, 'py'))
+        for (const lang of ['cpp', 'py', 'cs']) {
+            document.getElementById(`${id}-fmt-${lang}`)
+                .addEventListener('click', async (e) => await formatCode(e, pre, id, lang))
+        }
     }
 })()

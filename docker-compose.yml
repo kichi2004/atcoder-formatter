@@ -7,6 +7,7 @@ services:
     environment:
       BLACK_PATH: black
       CLANG_FORMAT_PATH: clang-format
+      DOTNET_PATH: dotnet
       PORT: 9000
     ports:
       - "9000:9000"
