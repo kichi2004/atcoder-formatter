@@ -2,7 +2,7 @@
 // @name           AtCoder Formatter
 // @name:en        AtCoder Formatter
 // @namespace
-// @version        1.2
+// @version        1.2.1
 // @description    AtCoder の解説コードなどをフォーマットできるようにします．
 // @description:en Add formatting buttons to source codes on AtCoder.
 // @author         kichi2004
@@ -104,9 +104,6 @@
             `
 <div class="btn-group" role="group">
     <button type="button" class="btn ${buttonClass} btn-sm" >
-        C++
-    </button>
-    <button type="button" class="btn ${buttonClass} btn-sm" id="${id}-fmt-cpp">
         C++
     </button>
     <button type="button" class="btn ${buttonClass} btn-sm" id="${id}-fmt-py">
