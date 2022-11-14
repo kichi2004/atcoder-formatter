@@ -2,7 +2,7 @@
 // @name           AtCoder Formatter
 // @name:en        AtCoder Formatter
 // @namespace
-// @version        1.4.0
+// @version        1.4.1
 // @description    AtCoder の解説コードなどをフォーマットできるようにします．
 // @description:en Add formatting buttons to source codes on AtCoder.
 // @author         kichi2004
@@ -125,20 +125,19 @@ const SOURCE_ID = 'source'
             event.target.disabled = true
             const sw = $(".editor-buttons > p:nth-child(2) > button")
             const active = sw.attr('aria-pressed') === 'true'
-            if (!active) sw.trigger('click')
 
             const textarea = sourceCodeDiv.children('textarea.plain-textarea')
+
+            if (!active) sw.trigger('click')
             const code = textarea.val()
+            if (!active) sw.trigger('click')
 
             const result = await request(code, lang, event)
             event.target.disabled = false
-            if (!result) {
-                if (!active) sw.trigger('click')
-                return
-            }
+            if (!result) return
 
+            if (!active) sw.trigger('click')
             textarea.val(result)
-
             if (!active) sw.trigger('click')
         }
 
