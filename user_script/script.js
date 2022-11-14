@@ -2,7 +2,7 @@
 // @name           AtCoder Formatter
 // @name:en        AtCoder Formatter
 // @namespace
-// @version        1.3.2
+// @version        1.4.0
 // @description    AtCoder の解説コードなどをフォーマットできるようにします．
 // @description:en Add formatting buttons to source codes on AtCoder.
 // @author         kichi2004
@@ -16,56 +16,44 @@
 
 'use strict';
 
-(async function () {
+async function request(code, lang) {
+    const res = await fetch(`https://formatter.api.kichi2004.jp/format?lang=${lang}`, {
+        body: code,
+        method: 'POST'
+    })
+    if (!res.ok) {
+        alert('Formatting Request Failed!')
+        return
+    }
+    const json = await res.json()
+    if (json['status'] === 'error') {
+        alert('Formatting Error!\n' + json['error'])
+        return
+    }
+    return json['result']
+}
 
-    const formatCode = async (event, pre, id, lang) => {
-        const removeModal = () => {
-            $(`#modal-${id}-format-warning`).modal('hide')
-        }
+function createButtons(className, id) {
+    return `
+<div class="btn-group" role="group">
+    <button type="button" class="btn ${className} btn-sm" title="C/C++ のソースコードをフォーマット" id="${id}-fmt-cpp">
+        C/C++
+    </button>
+    <button type="button" class="btn ${className} btn-sm" title="Python のソースコードをフォーマット" id="${id}-fmt-py">
+        Python
+    </button>
+    <button type="button" class="btn ${className} btn-sm" title="C# のソースコードをフォーマット" id="${id}-fmt-cs">
+        C#
+    </button>
+</div>`;
+}
+const SOURCE_ID = 'source'
 
-        const formatInner = async (modal = false) => {
-            if (modal) {
-                removeModal()
-            }
-
-            event.target.disabled = true
-            const data = document.getElementById(id)
-            const res = await fetch(`https://formatter.api.kichi2004.jp/format?lang=${lang}`, {
-                body: data.innerText,
-                method: 'POST'
-            })
-            event.target.disabled = false
-            if (!res.ok) {
-                alert('Formatting Request Failed!')
-                return
-            }
-            const json = await res.json()
-            if (json['status'] === 'error') {
-                alert('Formatting Error!\n' + json['error'])
-                return
-            }
-            const result = json['result']
-            const nextPre = document.createElement('pre')
-            nextPre.textContent = result
-            nextPre.classList.add('prettyprint', `lang-${lang}`, 'linenums')
-            pre.before(nextPre)
-            const preId = pre.id
-            pre.remove()
-            if (preId) {
-                nextPre.id = preId
-            }
-
-            data.textContent = result
-            PR.prettyPrint()
-        }
-
-        const finished = endTime.toDate() < new Date()
-        if (finished) {
-            await formatInner()
-            return
-        }
-
-        document.body.insertAdjacentHTML('afterbegin', `
+;(async function () {
+    const showModal = (id, formatInner) => {
+        if (!document.getElementById(`modal-${id}-format-warning`)) {
+            document.createht
+            document.body.insertAdjacentHTML('afterbegin', `
 <div id="modal-${id}-format-warning" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -87,10 +75,83 @@
 </div>
         `)
 
+            document.getElementById(`${id}-force-format`).addEventListener('click', async () => await formatInner(true))
+            document.getElementById(`${id}-cancel`).addEventListener('click', () => removeModal(id))
+        }
+
         $(`#modal-${id}-format-warning`).modal('show')
-        document.getElementById(`${id}-force-format`).addEventListener('click', async () => await formatInner(true))
-        document.getElementById(`${id}-cancel`).addEventListener('click', removeModal)
     }
+    const removeModal = (id) => {
+        const modal = $(`#modal-${id}-format-warning`)
+        modal.modal('hide')
+    }
+    const formatCode = async (event, pre, id, lang) => {
+        const formatInner = async (modal = false) => {
+            if (modal) removeModal(id)
+
+            event.target.disabled = true
+            const data = document.getElementById(id)
+            const result = await request(data.innerText, lang, event)
+            event.target.disabled = false
+            if (!result) return
+
+            const nextPre = document.createElement('pre')
+            nextPre.textContent = result
+            nextPre.classList.add('prettyprint', `lang-${lang}`, 'linenums')
+            pre.before(nextPre)
+            const preId = pre.id
+            pre.remove()
+            if (preId) {
+                nextPre.id = preId
+            }
+
+            data.textContent = result
+            PR.prettyPrint()
+        }
+
+        const finished = endTime.toDate() < new Date()
+        if (finished) {
+            await formatInner()
+            return
+        }
+
+        showModal(id, formatInner)
+    }
+
+    const formatTextArea = async (event, lang) => {
+        const formatInner = async (modal = false) => {
+            if (modal) removeModal(SOURCE_ID)
+
+            event.target.disabled = true
+            const sw = $(".editor-buttons > p:nth-child(2) > button")
+            const active = sw.attr('aria-pressed') === 'true'
+            if (!active) sw.trigger('click')
+
+            const textarea = sourceCodeDiv.children('textarea.plain-textarea')
+            const code = textarea.val()
+
+            const result = await request(code, lang, event)
+            event.target.disabled = false
+            if (!result) {
+                if (!active) sw.trigger('click')
+                return
+            }
+
+            textarea.val(result)
+
+            if (!active) sw.trigger('click')
+        }
+
+        const finished = endTime.toDate() < new Date()
+        if (finished) {
+            await formatInner()
+            return
+        }
+
+        showModal(SOURCE_ID, formatInner)
+    }
+
+    const buttonClass = endTime.toDate() < new Date() ? 'btn-info' : 'btn-danger'
 
     for (const pre of document.getElementsByClassName('prettyprint')) {
         const next = pre.nextElementSibling
@@ -101,26 +162,19 @@
         while (adding.className === 'div-btn-copy')
             adding = adding.previousElementSibling
 
-        const buttonClass = endTime.toDate() < new Date() ? 'btn-info' : 'btn-danger'
-
-        adding.insertAdjacentHTML(
-            'afterend',
-            `
-<div class="btn-group" role="group">
-    <button type="button" class="btn ${buttonClass} btn-sm" id="${id}-fmt-cpp">
-        C++
-    </button>
-    <button type="button" class="btn ${buttonClass} btn-sm" id="${id}-fmt-py">
-        Python
-    </button>
-    <button type="button" class="btn ${buttonClass} btn-sm" id="${id}-fmt-cs">
-        C#
-    </button>
-</div>`
-        )
+        adding.insertAdjacentHTML('afterend',createButtons(buttonClass, id))
         for (const lang of ['cpp', 'py', 'cs']) {
             document.getElementById(`${id}-fmt-${lang}`)
                 .addEventListener('click', async (e) => await formatCode(e, pre, id, lang))
         }
+    }
+
+    const sourceCodeDiv = $('#sourceCode')
+    if (!sourceCodeDiv) return
+
+    $('.editor-buttons')[0].insertAdjacentHTML('beforeend', createButtons(buttonClass, SOURCE_ID))
+    for (const lang of ['cpp', 'py', 'cs']) {
+        document.getElementById(`source-fmt-${lang}`)
+            .addEventListener('click', async (e) => await formatTextArea(e, lang))
     }
 })()
