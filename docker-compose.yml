@@ -3,7 +3,7 @@ services:
   app:
     container_name: formatter
     build: .
-    restart: on-failure
+    restart: always
     environment:
       BLACK_PATH: black
       CLANG_FORMAT_PATH: clang-format
