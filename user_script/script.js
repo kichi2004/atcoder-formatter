@@ -2,7 +2,7 @@
 // @name           AtCoder Formatter
 // @name:en        AtCoder Formatter
 // @namespace
-// @version        1.4.1
+// @version        1.5.0-dev
 // @description    AtCoder の解説コードなどをフォーマットできるようにします．
 // @description:en Add formatting buttons to source codes on AtCoder.
 // @author         kichi2004
@@ -52,7 +52,6 @@ const SOURCE_ID = 'source'
 ;(async function () {
     const showModal = (id, formatInner) => {
         if (!document.getElementById(`modal-${id}-format-warning`)) {
-            document.createht
             document.body.insertAdjacentHTML('afterbegin', `
 <div id="modal-${id}-format-warning" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -95,6 +94,14 @@ const SOURCE_ID = 'source'
             event.target.disabled = false
             if (!result) return
 
+            if (pre.classList.contains('ace_editor')) {
+                /** @type {AceAjax.Editor} */
+                const editor = pre.env.editor
+                editor.setValue(result)
+                editor.clearSelection()
+                return
+            }
+
             const nextPre = document.createElement('pre')
             nextPre.textContent = result
             nextPre.classList.add('prettyprint', `lang-${lang}`, 'linenums')
@@ -123,10 +130,11 @@ const SOURCE_ID = 'source'
             if (modal) removeModal(SOURCE_ID)
 
             event.target.disabled = true
-            const sw = $(".editor-buttons > p:nth-child(2) > button")
+            const sw = $(".editor-buttons > button:nth-child(3)")
             const active = sw.attr('aria-pressed') === 'true'
 
-            const textarea = sourceCodeDiv.children('textarea.plain-textarea')
+            const textarea = sourceCodeDiv.children('textarea#plain-textarea')
+
 
             if (!active) sw.trigger('click')
             const code = textarea.val()
@@ -152,7 +160,13 @@ const SOURCE_ID = 'source'
 
     const buttonClass = endTime.toDate() < new Date() ? 'btn-info' : 'btn-danger'
 
-    for (const pre of document.getElementsByClassName('prettyprint')) {
+    const prePrettyPrint = Array.from(
+        document.getElementsByClassName('prettyprint')
+    )
+    const preAceEditor = Array.from(
+        document.getElementsByClassName('ace_editor')
+    )
+    for (const pre of prePrettyPrint.concat(preAceEditor)) {
         const next = pre.nextElementSibling
         if (next.className !== 'source-code-for-copy') continue
         const id = next.id
@@ -161,7 +175,7 @@ const SOURCE_ID = 'source'
         while (adding.className === 'div-btn-copy')
             adding = adding.previousElementSibling
 
-        adding.insertAdjacentHTML('afterend',createButtons(buttonClass, id))
+        adding.insertAdjacentHTML('afterend', createButtons(buttonClass, id))
         for (const lang of ['cpp', 'py', 'cs']) {
             document.getElementById(`${id}-fmt-${lang}`)
                 .addEventListener('click', async (e) => await formatCode(e, pre, id, lang))
