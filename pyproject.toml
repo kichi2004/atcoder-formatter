@@ -1,0 +1,11 @@
+[project]
+name = "atcoder_formatter_api"
+version = "1.6.0"
+description = "Add format button to AtCoder codes (API)"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "click>=8.3.1",
+    "fastapi>=0.135.2",
+    "uvicorn>=0.42.0",
+]
