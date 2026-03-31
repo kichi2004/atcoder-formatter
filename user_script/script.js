@@ -2,7 +2,7 @@
 // @name           AtCoder Formatter
 // @name:en        AtCoder Formatter
 // @namespace
-// @version        1.5.0
+// @version        1.6.0
 // @description    AtCoder の解説コードなどをフォーマットできるようにします．
 // @description:en Add formatting buttons to source codes on AtCoder.
 // @author         kichi2004
@@ -17,7 +17,7 @@
 'use strict';
 
 async function request(code, lang) {
-    const res = await fetch(`https://formatter.api.kichi2004.jp/format?lang=${lang}`, {
+    const res = await fetch(`https://formatter-api.kichi2004.jp/format?lang=${lang}`, {
         body: code,
         method: 'POST'
     })
