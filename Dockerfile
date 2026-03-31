@@ -1,4 +1,4 @@
-FROM python:3.14-trixie
+FROM python:3.14-slim-trixie
 
 WORKDIR /app
 
@@ -11,6 +11,6 @@ ENV PATH $PATH:/root/.dotnet
 RUN dotnet tool install -g dotnet-format
 
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 ENTRYPOINT ["python3", "main.py"]
